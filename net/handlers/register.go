@@ -13,6 +13,11 @@ func Register() error {
 		return err
 	}
 
+	err = event.PacketEventBus.Subscribe("ping", handlePing)
+	if err != nil {
+		return err
+	}
+
 	return nil
 }
 

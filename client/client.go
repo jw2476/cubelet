@@ -141,3 +141,11 @@ func (c *Client) Send(packet Packet) error {
 	_, err := c.conn.Write(packet.finish())
 	return err
 }
+
+func (c *Client) ReadUnsignedLong() (uint64, error) {
+	buf, err := c.ReadBytes(8)
+	if err != nil {
+		return 0, err
+	}
+	return binary.BigEndian.Uint64(buf), nil
+}

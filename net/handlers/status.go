@@ -60,3 +60,14 @@ func handleRequest(request prot.Request) {
 	}
 }
 
+func handlePing(ping prot.Ping) {
+	packet := client.NewPacket(0x01)
+	packet.WriteUnsignedLong(ping.Payload)
+	err := ping.Client.Send(packet)
+	if err != nil {
+		fmt.Println(err)
+	}
+}
+
+
+

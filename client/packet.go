@@ -1,5 +1,7 @@
 package client
 
+import "encoding/binary"
+
 type Packet struct {
 	buffer []byte
 }
@@ -34,6 +36,12 @@ func (p *Packet) writeBytes(buf []byte) {
 func (p *Packet) WriteString(value string) {
 	p.WriteVarInt(len(value))
 	p.writeBytes([]byte(value))
+}
+
+func (p *Packet) WriteUnsignedLong(value uint64) {
+	buf := make([]byte, 8)
+	binary.BigEndian.PutUint64(buf, value)
+	p.buffer = append(p.buffer, buf...)
 }
 
 func (p *Packet) finish() []byte {

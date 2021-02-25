@@ -38,7 +38,7 @@ func HandleConn(conn net.Conn) {
 		case 1: {
 			switch opcode {
 			case 0: packet = prot.DecodeRequest(&c)
-
+			case 1: packet, err = prot.DecodePing(&c)
 			}
 		}
 		case 2: {
