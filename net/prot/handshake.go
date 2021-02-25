@@ -5,13 +5,14 @@ import (
 )
 
 type Handshake struct {
-	protocolVersion int
-	serverAddress string
-	serverPort uint16
-	nextState int
+	Client *client.Client
+	ProtocolVersion int
+	ServerAddress string
+	ServerPort uint16
+	NextState int
 }
 
-func DecodeHandshake(c client.Client) (Handshake, error) {
+func DecodeHandshake(c *client.Client) (Handshake, error) {
 	protocolVersion, err := c.ReadVarInt()
 	if err != nil {
 		return Handshake{}, err
@@ -33,9 +34,14 @@ func DecodeHandshake(c client.Client) (Handshake, error) {
 	}
 
 	return Handshake{
-		protocolVersion: protocolVersion,
-		serverAddress:   serverAddress,
-		serverPort:      serverPort,
-		nextState:       nextState,
+		Client: c,
+		ProtocolVersion: protocolVersion,
+		ServerAddress:   serverAddress,
+		ServerPort:      serverPort,
+		NextState:       nextState,
 	}, nil
+}
+
+func (h Handshake) GetName() string {
+	return "handshake"
 }

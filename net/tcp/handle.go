@@ -3,6 +3,7 @@ package tcp
 import (
 	"fmt"
 	"github.com/jw2476/cubelet/client"
+	"github.com/jw2476/cubelet/event"
 	"github.com/jw2476/cubelet/net/prot"
 	"net"
 )
@@ -24,17 +25,31 @@ func HandleConn(conn net.Conn) {
 		}
 		c.AddBytes(buf)
 
-		_, err = c.ReadVarInt()
+		opcode, err := c.ReadVarInt()
 		if err != nil {
 			fmt.Println(err)
 			return
 		}
 
-		var packet interface{}
+		var packet event.Event
 
 		switch c.GetState() {
-		case 0: packet, err = prot.DecodeHandshake(c)
+		case 0: packet, err = prot.DecodeHandshake(&c)
+		case 1: {
+			switch opcode {
+			case 0: packet = prot.DecodeRequest(&c)
 
+			}
+		}
+		case 2: {
+			switch opcode {
+			case 0: packet, err = prot.DecodeLoginStart(&c)
+			}
+		}
+		default: {
+			fmt.Println("Invalid State", c.GetState())
+			return
+		}
 		}
 
 		if err != nil {
@@ -43,6 +58,7 @@ func HandleConn(conn net.Conn) {
 		}
 
 		fmt.Printf("%T { %+v }\n", packet, packet)
+		event.PacketEventBus.Publish(packet.GetName(), packet)
 
 		c.ResetBuffer()
 	}

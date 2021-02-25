@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/binary"
 	"errors"
+	"fmt"
 	"net"
 )
 
@@ -129,4 +130,14 @@ func (c *Client) ReadUnsignedShort() (uint16, error) {
 
 func (c Client) GetState() int {
 	return c.state
+}
+
+func (c *Client) SetState(state int) {
+	c.state = state
+}
+
+func (c *Client) Send(packet Packet) error {
+	fmt.Println(packet.finish())
+	_, err := c.conn.Write(packet.finish())
+	return err
 }
